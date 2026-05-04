@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Team Task Manager</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --text: #17202a;
+      --muted: #627084;
+      --line: #dce3ee;
+      --brand: #0f766e;
+      --brand-dark: #115e59;
+      --danger: #b42318;
+      --warn: #b45309;
+      --ok: #15803d;
+      --shadow: 0 16px 40px rgba(23, 32, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      border-radius: 6px;
+      background: var(--brand);
+      color: white;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    button:hover { background: var(--brand-dark); }
+    button.secondary { background: #e8edf5; color: var(--text); }
+    button.secondary:hover { background: #dbe3ee; }
+    button.danger { background: var(--danger); }
+
+    input, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px 12px;
+      background: white;
+      color: var(--text);
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .topbar {
+      background: #17202a;
+      color: white;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .userbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #d7dee8;
+    }
+
+    .wrap {
+      width: min(1180px, calc(100% - 32px));
+      margin: 24px auto 40px;
+    }
+
+    .auth {
+      min-height: calc(100vh - 68px);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .auth-card {
+      width: min(430px, 100%);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .auth-card h1 {
+      margin: 0 0 18px;
+      font-size: 28px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .tabs button.active {
+      background: var(--brand);
+      color: white;
+    }
+
+    .tabs button {
+      background: #e8edf5;
+      color: var(--text);
+    }
+
+    .form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .panel h2 {
+      margin: 0 0 14px;
+      font-size: 18px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(120px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 28px;
+    }
+
+    .lists {
+      display: grid;
+      gap: 18px;
+    }
+
+    .items {
+      display: grid;
+      gap: 10px;
+    }
+
+    .item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      background: #fbfcfe;
+    }
+
+    .item-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .item h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 800;
+      background: #e8edf5;
+      color: #334155;
+      white-space: nowrap;
+    }
+
+    .pill.TODO { color: var(--warn); background: #fff7ed; }
+    .pill.IN_PROGRESS { color: #1d4ed8; background: #eff6ff; }
+    .pill.DONE { color: var(--ok); background: #ecfdf5; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .notice {
+      min-height: 22px;
+      color: var(--danger);
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    .hidden { display: none; }
+
+    @media (max-width: 880px) {
+      .grid, .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">Team Task Manager</div>
+      <div id="userbar" class="userbar hidden">
+        <span id="userLabel"></span>
+        <button class="secondary" id="logoutBtn">Logout</button>
+      </div>
+    </header>
+
+    <main>
+      <section id="authView" class="auth">
+        <div class="auth-card">
+          <h1>Team Task Manager</h1>
+          <div class="tabs">
+            <button id="loginTab" class="active">Login</button>
+            <button id="signupTab">Signup</button>
+          </div>
+
+          <form id="loginForm" class="form">
+            <label>Username
+              <input id="loginUsername" autocomplete="username" required>
+            </label>
+            <label>Password
+              <input id="loginPassword" type="password" autocomplete="current-password" required>
+            </label>
+            <button type="submit">Login</button>
+          </form>
+
+          <form id="signupForm" class="form hidden">
+            <label>Username
+              <input id="signupUsername" autocomplete="username" required>
+            </label>
+            <label>Email
+              <input id="signupEmail" type="email" autocomplete="email">
+            </label>
+            <label>Password
+              <input id="signupPassword" type="password" autocomplete="new-password" required>
+            </label>
+            <label>Role
+              <select id="signupRole">
+                <option value="MEMBER">Member</option>
+                <option value="ADMIN">Admin</option>
+              </select>
+            </label>
+            <button type="submit">Create Account</button>
+          </form>
+
+          <div id="authNotice" class="notice"></div>
+        </div>
+      </section>
+
+      <section id="appView" class="wrap hidden">
+        <div class="stats">
+          <div class="stat"><span>Total</span><strong id="statTotal">0</strong></div>
+          <div class="stat"><span>Todo</span><strong id="statTodo">0</strong></div>
+          <div class="stat"><span>In Progress</span><strong id="statProgress">0</strong></div>
+          <div class="stat"><span>Done</span><strong id="statDone">0</strong></div>
+          <div class="stat"><span>Overdue</span><strong id="statOverdue">0</strong></div>
+        </div>
+
+        <div class="grid">
+          <aside class="panel">
+            <form id="projectForm" class="form">
+              <h2>New Project</h2>
+              <label>Name
+                <input id="projectName" required>
+              </label>
+              <label>Members
+                <select id="projectMembers" multiple size="5" required></select>
+              </label>
+              <button type="submit">Create Project</button>
+            </form>
+
+            <form id="taskForm" class="form" style="margin-top: 24px;">
+              <h2>New Task</h2>
+              <label>Title
+                <input id="taskTitle" required>
+              </label>
+              <label>Project
+                <select id="taskProject" required></select>
+              </label>
+              <label>Assign To
+                <select id="taskAssignee" required></select>
+              </label>
+              <label>Status
+                <select id="taskStatus">
+                  <option value="TODO">Todo</option>
+                  <option value="IN_PROGRESS">In Progress</option>
+                  <option value="DONE">Done</option>
+                </select>
+              </label>
+              <label>Due Date
+                <input id="taskDueDate" type="date">
+              </label>
+              <button type="submit">Create Task</button>
+            </form>
+            <div id="appNotice" class="notice"></div>
+          </aside>
+
+          <section class="lists">
+            <div class="panel">
+              <h2>Projects</h2>
+              <div id="projectsList" class="items"></div>
+            </div>
+
+            <div class="panel">
+              <h2>Tasks</h2>
+              <div id="tasksList" class="items"></div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const state = {
+      token: localStorage.getItem('accessToken'),
+      user: null,
+      users: [],
+      projects: [],
+      tasks: [],
+    };
+
+    const el = (id) => document.getElementById(id);
+
+    function setNotice(id, message, ok = false) {
+      const node = el(id);
+      node.textContent = message || '';
+      node.style.color = ok ? '#15803d' : '#b42318';
+    }
+
+    function authHeaders() {
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${state.token}`,
+      };
+    }
+
+    async function api(path, options = {}) {
+      const response = await fetch(path, {
+        ...options,
+        headers: {
+          ...(options.auth ? authHeaders() : {'Content-Type': 'application/json'}),
+          ...(options.headers || {}),
+        },
+      });
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : null;
+      if (!response.ok) {
+        const detail = data.detail || JSON.stringify(data);
+        throw new Error(detail);
+      }
+      return data;
+    }
+
+    function showLoginMode(isLogin) {
+      el('loginTab').classList.toggle('active', isLogin);
+      el('signupTab').classList.toggle('active', !isLogin);
+      el('loginForm').classList.toggle('hidden', !isLogin);
+      el('signupForm').classList.toggle('hidden', isLogin);
+      setNotice('authNotice', '');
+    }
+
+    function showApp(isAuthed) {
+      el('authView').classList.toggle('hidden', isAuthed);
+      el('appView').classList.toggle('hidden', !isAuthed);
+      el('userbar').classList.toggle('hidden', !isAuthed);
+    }
+
+    async function loadApp() {
+      state.user = await api('/me/', {auth: true});
+      state.users = await api('/users/', {auth: true});
+      state.projects = await api('/projects/', {auth: true});
+      state.tasks = await api('/tasks/', {auth: true});
+      const dashboard = await api('/dashboard/', {auth: true});
+      render(dashboard);
+      showApp(true);
+    }
+
+    function render(dashboard) {
+      el('userLabel').textContent = `${state.user.username} (${state.user.role})`;
+      el('statTotal').textContent = dashboard.total_tasks;
+      el('statTodo').textContent = dashboard.todo;
+      el('statProgress').textContent = dashboard.in_progress;
+      el('statDone').textContent = dashboard.done;
+      el('statOverdue').textContent = dashboard.overdue;
+
+      const isAdmin = state.user.role === 'ADMIN';
+      el('projectForm').classList.toggle('hidden', !isAdmin);
+      el('taskForm').classList.toggle('hidden', !isAdmin);
+
+      renderOptions();
+      renderProjects();
+      renderTasks();
+    }
+
+    function renderOptions() {
+      el('projectMembers').innerHTML = state.users
+        .map((user) => `<option value="${user.id}">${user.username} (${user.role})</option>`)
+        .join('');
+      el('taskAssignee').innerHTML = state.users
+        .map((user) => `<option value="${user.id}">${user.username}</option>`)
+        .join('');
+      el('taskProject').innerHTML = state.projects
+        .map((project) => `<option value="${project.id}">${project.name}</option>`)
+        .join('');
+    }
+
+    function renderProjects() {
+      el('projectsList').innerHTML = state.projects.length
+        ? state.projects.map((project) => `
+          <article class="item">
+            <div class="item-head">
+              <h3>${project.name}</h3>
+              <span class="pill">${project.members.length} members</span>
+            </div>
+            <div class="meta">Created by ${project.created_by}</div>
+          </article>
+        `).join('')
+        : '<div class="meta">No projects yet.</div>';
+    }
+
+    function renderTasks() {
+      el('tasksList').innerHTML = state.tasks.length
+        ? state.tasks.map((task) => `
+          <article class="item">
+            <div class="item-head">
+              <div>
+                <h3>${task.title}</h3>
+                <div class="meta">Due ${task.due_date || 'not set'} · Project #${task.project}</div>
+              </div>
+              <span class="pill ${task.status}">${task.status.replace('_', ' ')}</span>
+            </div>
+            <div class="actions">
+              ${statusButton(task, 'TODO', 'Todo')}
+              ${statusButton(task, 'IN_PROGRESS', 'In Progress')}
+              ${statusButton(task, 'DONE', 'Done')}
+            </div>
+          </article>
+        `).join('')
+        : '<div class="meta">No tasks yet.</div>';
+    }
+
+    function statusButton(task, status, label) {
+      const disabled = task.status === status ? 'disabled' : '';
+      return `<button class="secondary" ${disabled} data-task="${task.id}" data-status="${status}">${label}</button>`;
+    }
+
+    async function refresh() {
+      await loadApp();
+      setNotice('appNotice', '');
+    }
+
+    el('loginTab').addEventListener('click', () => showLoginMode(true));
+    el('signupTab').addEventListener('click', () => showLoginMode(false));
+
+    el('loginForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      try {
+        const data = await api('/login/', {
+          method: 'POST',
+          body: JSON.stringify({
+            username: el('loginUsername').value,
+            password: el('loginPassword').value,
+          }),
+        });
+        state.token = data.access;
+        localStorage.setItem('accessToken', state.token);
+        await loadApp();
+      } catch (error) {
+        setNotice('authNotice', error.message);
+      }
+    });
+
+    el('signupForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      try {
+        await api('/signup/', {
+          method: 'POST',
+          body: JSON.stringify({
+            username: el('signupUsername').value,
+            email: el('signupEmail').value,
+            password: el('signupPassword').value,
+            role: el('signupRole').value,
+          }),
+        });
+        showLoginMode(true);
+        setNotice('authNotice', 'Account created. Login now.', true);
+      } catch (error) {
+        setNotice('authNotice', error.message);
+      }
+    });
+
+    el('logoutBtn').addEventListener('click', () => {
+      state.token = null;
+      localStorage.removeItem('accessToken');
+      showApp(false);
+    });
+
+    el('projectForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      try {
+        const members = Array.from(el('projectMembers').selectedOptions).map((option) => Number(option.value));
+        await api('/projects/', {
+          method: 'POST',
+          auth: true,
+          body: JSON.stringify({name: el('projectName').value, members}),
+        });
+        event.target.reset();
+        await refresh();
+      } catch (error) {
+        setNotice('appNotice', error.message);
+      }
+    });
+
+    el('taskForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      try {
+        await api('/tasks/', {
+          method: 'POST',
+          auth: true,
+          body: JSON.stringify({
+            title: el('taskTitle').value,
+            project: Number(el('taskProject').value),
+            assigned_to: Number(el('taskAssignee').value),
+            status: el('taskStatus').value,
+            due_date: el('taskDueDate').value || null,
+          }),
+        });
+        event.target.reset();
+        await refresh();
+      } catch (error) {
+        setNotice('appNotice', error.message);
+      }
+    });
+
+    el('tasksList').addEventListener('click', async (event) => {
+      const button = event.target.closest('button[data-task]');
+      if (!button) return;
+      try {
+        await api(`/tasks/${button.dataset.task}/`, {
+          method: 'PATCH',
+          auth: true,
+          body: JSON.stringify({status: button.dataset.status}),
+        });
+        await refresh();
+      } catch (error) {
+        setNotice('appNotice', error.message);
+      }
+    });
+
+    if (state.token) {
+      loadApp().catch(() => {
+        localStorage.removeItem('accessToken');
+        showApp(false);
+      });
+    }
+  </script>
+</body>
+</html>
