@@ -1,0 +1,4 @@
+D:\project\GRT Project\TeamTaskManager\backend\venv\Lib\site-packages\django\core\handlers\base.py:62: UserWarning: No directory at: D:\project\GRT Project\TeamTaskManager\backend\staticfiles\
+  mw_instance = middleware(adapted_handler)
+[10/May/2026 18:05:22] "GET / HTTP/1.1" 200 416
+[10/May/2026 18:05:22,421] - Broken pipe from ('127.0.0.1', 53273)
