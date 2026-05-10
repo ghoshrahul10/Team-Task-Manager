@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import TemplateView
+
 from api.views import (
     CurrentUserView,
     DashboardView,
@@ -10,27 +11,29 @@ from api.views import (
     TaskListCreateView,
     UserListView,
 )
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='index.html')),
+
+    # ✅ API ROUTES
+    path('api/signup/', SignupView.as_view()),
+    path('api/login/', TokenObtainPairView.as_view()),
+    path('api/refresh/', TokenRefreshView.as_view()),
+    path('api/me/', CurrentUserView.as_view()),
+    path('api/users/', UserListView.as_view()),
+    path('api/projects/', ProjectListCreateView.as_view()),
+    path('api/tasks/', TaskListCreateView.as_view()),
+    path('api/tasks/<int:pk>/', TaskDetailView.as_view()),
+    path('api/dashboard/', DashboardView.as_view()),
+    path('api-auth/', include('rest_framework.urls')),
+
+    # ✅ ADMIN
     path('admin/', admin.site.urls),
 
-    # Auth
-    path('signup/', SignupView.as_view()),
-    path('login/', TokenObtainPairView.as_view()),
-    path('refresh/', TokenRefreshView.as_view()),
-    path('api-auth/', include('rest_framework.urls')),
-    path('me/', CurrentUserView.as_view()),
-    path('users/', UserListView.as_view()),
-
-    # Project
-    path('projects/', ProjectListCreateView.as_view()),
-
-    # Task
-    path('tasks/', TaskListCreateView.as_view()),
-    path('tasks/<int:pk>/', TaskDetailView.as_view()),
-
-    # Dashboard
-    path('dashboard/', DashboardView.as_view()),
+    # ✅ FRONTEND
+    path('', TemplateView.as_view(template_name='index.html')),
 ]

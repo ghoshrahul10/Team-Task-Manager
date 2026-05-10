@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
-// ✅ Railway production API URL from .env
+// ✅ Railway API URL
 const API_URL = import.meta.env.VITE_API_URL;
 
 const statuses = [
@@ -65,16 +65,14 @@ function App() {
     try {
       data = text ? JSON.parse(text) : null;
     } catch (error) {
-      throw new Error(
-        'Backend returned invalid JSON response'
-      );
+      throw new Error('Backend returned invalid JSON response');
     }
 
     if (!response.ok) {
       throw new Error(
         data?.detail ||
-          data?.message ||
-          'Request failed'
+        data?.message ||
+        'Request failed'
       );
     }
 
@@ -169,6 +167,9 @@ function App() {
       setToken(data.access);
 
       await loadData(data.access);
+
+      setMessage('Login successful ✅');
+
     } catch (error) {
       setMessage(error.message);
     }
@@ -191,6 +192,7 @@ function App() {
       setMessage(
         'Account created successfully. Please login.'
       );
+
     } catch (error) {
       setMessage(error.message);
     }
