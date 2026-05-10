@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './styles.css';
 
 // ✅ Railway API URL
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = "https://team-task-manager-production-c7e5.up.railway.app/api";
 
 const statuses = [
   ['TODO', 'Todo'],
