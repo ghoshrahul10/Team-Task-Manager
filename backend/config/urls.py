@@ -29,11 +29,12 @@ urlpatterns = [
     path('api/tasks/', TaskListCreateView.as_view()),
     path('api/tasks/<int:pk>/', TaskDetailView.as_view()),
     path('api/dashboard/', DashboardView.as_view()),
+
     path('api-auth/', include('rest_framework.urls')),
 
-    # ✅ ADMIN
+    # Admin
     path('admin/', admin.site.urls),
 
-    # ✅ FRONTEND
+    # Frontend
     path('', TemplateView.as_view(template_name='index.html')),
 ]
