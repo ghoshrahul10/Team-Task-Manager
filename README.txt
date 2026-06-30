@@ -59,9 +59,3 @@ Railway Deployment:
 6. Railway will use the Dockerfile to build the React frontend and Django backend together.
 7. Generate a public domain for the web service.
 8. Open the Railway public URL and test signup/login/project/task/dashboard flows.
-
-Submission:
-- Live Application URL: Railway public URL
-- GitHub Repository Link: GitHub repo URL
-- README file: This README.txt file
-- Demo Video: 2-5 minute walkthrough showing signup/login, admin project/task creation, member task update, and dashboard
